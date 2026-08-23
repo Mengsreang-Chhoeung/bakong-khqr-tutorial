@@ -1,0 +1,17 @@
+{
+  "name": "bakong-khqr-sandbox-example",
+  "version": "1.0.0",
+  "description": "Minimal Express example of generating and checking a Bakong KHQR payment, for teaching purposes.",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "qrcode": "^1.5.4",
+    "ts-khqr": "^2.0.1"
+  }
+}
