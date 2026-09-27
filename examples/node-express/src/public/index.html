@@ -1,34 +1,37 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-  <title>Bakong KHQR Example</title>
-</head>
-<body>
-  <h1>Bakong KHQR Example</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <title>Bakong KHQR Example</title>
+  </head>
+  <body>
+    <h1>Bakong KHQR Example</h1>
 
-  <!--
+    <!--
     Generation happens the moment the page loads, with no button click
     needed — unlike PayWay's checkout, there's no "create a transaction on
     a gateway" round trip here, just an offline KHQR string turned into an
     image. See routes/payment.js for details.
   -->
-  <div id="result">Generating KHQR...</div>
+    <div id="result">Generating KHQR...</div>
 
-  <script>
-    async function createPayment() {
-      const resultEl = document.getElementById('result');
+    <script>
+      async function createPayment() {
+        const resultEl = document.getElementById("result");
 
-      const res = await fetch('/create-payment', { method: 'POST' });
-      const data = await res.json();
+        const res = await fetch("/create-payment", { method: "POST" });
+        const data = await res.json();
 
-      if (data.error) {
-        resultEl.textContent = `Failed to generate KHQR: ${data.error}`;
-        return;
-      }
+        if (data.error) {
+          resultEl.textContent = `Failed to generate KHQR: ${data.error}`;
+          return;
+        }
 
-      resultEl.innerHTML = `
+        resultEl.innerHTML = `
         <p>Scan with any Bakong-participating banking app:</p>
         <img src="${data.qrImage}" alt="Bakong KHQR code" width="250" height="250">
         <p>${data.amount.toLocaleString()} ${data.currency}</p>
@@ -36,48 +39,53 @@
         <p id="countdown"></p>
       `;
 
-      pollPaymentStatus(data.md5, data.expiresAt);
-    }
-
-    // The Bakong Open API's one real network call in this example
-    // (routes/payment.js, POST /check-payment-status). Stops as soon as a
-    // paid result comes back, or once the QR's own expirationTimestamp
-    // passes — a dynamic KHQR is only valid until then regardless of how
-    // long we keep polling.
-    async function pollPaymentStatus(md5, expiresAt) {
-      const statusEl = document.getElementById('status');
-      const countdownEl = document.getElementById('countdown');
-      const POLL_INTERVAL_MS = 3000;
-
-      const countdownTimer = setInterval(() => {
-        const secondsLeft = Math.max(0, Math.round((expiresAt - Date.now()) / 1000));
-        countdownEl.textContent = secondsLeft > 0 ? `Expires in ${secondsLeft}s` : '';
-      }, 1000);
-
-      while (Date.now() < expiresAt) {
-        await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
-
-        const res = await fetch('/check-payment-status', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ md5 }),
-        });
-        const data = await res.json();
-
-        if (data.paid) {
-          clearInterval(countdownTimer);
-          countdownEl.textContent = '';
-          statusEl.textContent = 'Payment received!';
-          return;
-        }
+        // pollPaymentStatus(data.md5, data.expiresAt);
       }
 
-      clearInterval(countdownTimer);
-      countdownEl.textContent = '';
-      statusEl.textContent = 'This KHQR has expired. Refresh the page for a new one.';
-    }
+      // The Bakong Open API's one real network call in this example
+      // (routes/payment.js, POST /check-payment-status). Stops as soon as a
+      // paid result comes back, or once the QR's own expirationTimestamp
+      // passes — a dynamic KHQR is only valid until then regardless of how
+      // long we keep polling.
+      async function pollPaymentStatus(md5, expiresAt) {
+        const statusEl = document.getElementById("status");
+        const countdownEl = document.getElementById("countdown");
+        const POLL_INTERVAL_MS = 3000;
 
-    createPayment();
-  </script>
-</body>
+        const countdownTimer = setInterval(() => {
+          const secondsLeft = Math.max(
+            0,
+            Math.round((expiresAt - Date.now()) / 1000),
+          );
+          countdownEl.textContent =
+            secondsLeft > 0 ? `Expires in ${secondsLeft}s` : "";
+        }, 1000);
+
+        while (Date.now() < expiresAt) {
+          await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
+
+          const res = await fetch("/check-payment-status", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ md5 }),
+          });
+          const data = await res.json();
+
+          if (data.paid) {
+            clearInterval(countdownTimer);
+            countdownEl.textContent = "";
+            statusEl.textContent = "Payment received!";
+            return;
+          }
+        }
+
+        clearInterval(countdownTimer);
+        countdownEl.textContent = "";
+        statusEl.textContent =
+          "This KHQR has expired. Refresh the page for a new one.";
+      }
+
+      createPayment();
+    </script>
+  </body>
 </html>

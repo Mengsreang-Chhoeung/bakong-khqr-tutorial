@@ -1,6 +1,6 @@
-const express = require('express');
-const QRCode = require('qrcode');
-const { BakongKHQR, IndividualInfo, khqrData } = require('bakong-khqr');
+const express = require("express");
+const QRCode = require("qrcode");
+const { BakongKHQR, IndividualInfo, khqrData } = require("bakong-khqr");
 const router = express.Router();
 
 const {
@@ -14,7 +14,7 @@ const {
 
 const CHECK_TRANSACTION_URL = `${BAKONG_API_BASE_URL}/check_transaction_by_md5`;
 
-const DEMO_AMOUNT = 5000; // 5,000 KHR, hardcoded for this teaching example
+const DEMO_AMOUNT = 100; // 100 KHR, hardcoded for this teaching example
 const EXPIRATION_MS = 5 * 60 * 1000; // 5 minutes
 
 /**
@@ -45,18 +45,21 @@ const EXPIRATION_MS = 5 * 60 * 1000; // 5 minutes
  * unlike PayWay's Purchase API, which returns a ready-made QR PNG directly.
  * We render it into a scannable image ourselves with `qrcode` below.
  */
-router.post('/create-payment', async (req, res) => {
+router.post("/create-payment", async (req, res) => {
   const expiresAt = Date.now() + EXPIRATION_MS;
 
   const individualInfo = new IndividualInfo(
     BAKONG_ACCOUNT_ID,
     BAKONG_MERCHANT_NAME,
-    BAKONG_MERCHANT_CITY || 'Phnom Penh',
+    BAKONG_MERCHANT_CITY || "Phnom Penh",
     {
-      currency: BAKONG_CURRENCY === 'USD' ? khqrData.currency.usd : khqrData.currency.khr,
+      currency:
+        BAKONG_CURRENCY === "USD"
+          ? khqrData.currency.usd
+          : khqrData.currency.khr,
       amount: DEMO_AMOUNT,
       expirationTimestamp: expiresAt,
-    }
+    },
   );
 
   // status.code is 0 on success, 1 on a validation error.
@@ -72,7 +75,7 @@ router.post('/create-payment', async (req, res) => {
     qrImage,
     md5: result.data.md5,
     amount: DEMO_AMOUNT,
-    currency: BAKONG_CURRENCY || 'KHR',
+    currency: BAKONG_CURRENCY || "KHR",
     expiresAt,
   });
 });
@@ -90,14 +93,14 @@ router.post('/create-payment', async (req, res) => {
  * yet — the frontend polls this on an interval until it gets a paid result
  * or the QR's expirationTimestamp passes.
  */
-router.post('/check-payment-status', async (req, res) => {
+router.post("/check-payment-status", async (req, res) => {
   const { md5 } = req.body;
 
   const bakongRes = await fetch(CHECK_TRANSACTION_URL, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${BAKONG_ACCESS_TOKEN}`,
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${BAKONG_ACCESS_TOKEN}`,
     },
     body: JSON.stringify({ md5 }),
   });
