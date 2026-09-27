@@ -89,13 +89,6 @@ router.post('/create-payment', async (req, res) => {
  * and paid; a non-zero `responseCode` (or a 404) means it hasn't been paid
  * yet — the frontend polls this on an interval until it gets a paid result
  * or the QR's expirationTimestamp passes.
- *
- * UNCONFIRMED (teaching note): exactly how
- * BAKONG_ACCESS_TOKEN is meant to be issued/renewed isn't documented in
- * public sources reviewed while writing this example — it's read here as
- * a static value from .env, obtained manually via the developer portal
- * (https://api-bakong.nbc.gov.kh/). Don't build a guessed token-refresh
- * flow without checking the current official docs first.
  */
 router.post('/check-payment-status', async (req, res) => {
   const { md5 } = req.body;
