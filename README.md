@@ -2,14 +2,12 @@
 
 A beginner-friendly, end-to-end guide to generating and checking Bakong KHQR payments — written for students, with a runnable code example.
 
+📖 **The written tutorial lives at [mengsreang-chhoeung.work/tutorials/bakong-khqr-tutorial](https://mengsreang-chhoeung.work/tutorials/bakong-khqr-tutorial).** This repo holds only the companion code.
+
 ## Structure
 
 ```
 bakong-khqr-tutorial/
-├── docs/                       # Written guides, read in order
-│   ├── 01-getting-started.md
-│   ├── 02-going-live.md
-│   └── 03-merchant-khqr-and-advanced.md
 ├── examples/
 │   └── node-express/           # Runnable Individual-KHQR example (Node.js/Express)
 └── README.md
@@ -17,9 +15,7 @@ bakong-khqr-tutorial/
 
 ## Status
 
-- [x] `01-getting-started.md` — generate an Individual KHQR, render it as a scannable image, check payment status (concepts + walkthrough)
-- [ ] `02-going-live.md` — production go-live checklist (not yet written)
-- [ ] `03-merchant-khqr-and-advanced.md` — Merchant KHQR, batch status checks, deeplinks (not yet written)
+- [x] [Written tutorial](https://mengsreang-chhoeung.work/tutorials/bakong-khqr-tutorial) — hosted on the site, not in this repo
 - [x] `examples/node-express` — working Individual-KHQR generate-and-check starter
 
 ## Prerequisites
@@ -30,7 +26,7 @@ bakong-khqr-tutorial/
 
 ## Getting Started
 
-1. Read [`docs/01-getting-started.md`](./docs/01-getting-started.md) first — it explains the concepts before any code.
+1. Read the [tutorial](https://mengsreang-chhoeung.work/tutorials/bakong-khqr-tutorial) first — it explains the concepts before any code.
 2. Then walk through [`examples/node-express`](./examples/node-express) to see it running.
 
 ## Disclaimer

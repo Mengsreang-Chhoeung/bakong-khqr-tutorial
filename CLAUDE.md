@@ -4,18 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this repo is
 
-A beginner-facing tutorial for generating and checking Bakong KHQR payments, written for students. It pairs written guides in `docs/` with a single runnable example in `examples/node-express/`. This is **teaching material, not a production SDK or library** — code correctness for students learning the concepts matters more than completeness.
+A beginner-facing tutorial for generating and checking Bakong KHQR payments, written for students. The written guides are published on the author's site at https://mengsreang-chhoeung.work/tutorials/bakong-khqr-tutorial (not stored in this repo); this repo holds only the runnable example in `examples/node-express/`. This is **teaching material, not a production SDK or library** — code correctness for students learning the concepts matters more than completeness.
 
 Unlike a payment gateway that signs and submits a request server-side (e.g. ABA PayWay), generating a KHQR code is an entirely **offline** operation — no Bakong API call is involved. So most of this repo's "don't silently guess" caution applies to two things: the QR-image-rendering step (Bakong only gives you a string) and the one real network call in the example, checking payment status.
 
 ## Repo structure
 
 ```
-docs/                                  # Written guides, meant to be read in order
-├── 01-getting-started.md              # Generate + display + check an Individual KHQR — the only complete guide
-├── 02-going-live.md                   # Stub — not yet written
-└── 03-merchant-khqr-and-advanced.md   # Stub — not yet written
-
 examples/node-express/                 # Runnable Individual-KHQR example (Node.js/Express)
 ├── src/server.js                      # Express app entrypoint
 ├── src/routes/payment.js              # POST /create-payment, POST /check-payment-status
@@ -51,8 +46,8 @@ These are teaching gaps, flagged in code/docs, not bugs to silently "fix":
 
 - **Package choice: `ts-khqr`, not `bakong-khqr`.** The officially-named `bakong-khqr` npm package's constructor signature is inconsistent across public examples (`new BakongKHQR(accessToken)` in some, `new BakongKHQR()` in others), and its canonical source lives on NBC's private GitLab (`gitlab.nbc.gov.kh/khqr/sdk-javascript`), not a publicly inspectable repo — so that inconsistency can't be resolved by reading the source. `ts-khqr` exposes an unambiguous functional API (`KHQR.generate({...})`) and is used here instead. This is a deliberate substitution for teaching clarity, **not confirmation that the two packages produce identical output** — treat any change here as needing a fresh check against the KHQR SDK Document before publishing to students.
 - **Bearer token acquisition is unconfirmed.** The developer portal (https://api-bakong.nbc.gov.kh/) issues API access via a registered email, but whether that's a one-time long-lived token, a `/token` exchange, or a `/renew_token` flow keyed on your email isn't confirmed from public sources. This example uses a single static `BAKONG_ACCESS_TOKEN` from `.env`, obtained manually — it does **not** implement a guessed token-fetch endpoint.
-- **No callback/webhook mechanism confirmed for KHQR.** Unlike PayWay's documented `return_url` callback, no equivalent server-to-server notification was confirmed for Bakong KHQR in the sources reviewed while writing this repo. `check_transaction_by_md5` polling is the only status-check mechanism implemented. If a callback mechanism is confirmed later, document it in `docs/03-merchant-khqr-and-advanced.md`.
-- **Merchant KHQR, batch status checks, and deeplinks aren't implemented.** The official docs reference `TAG.MERCHANT`-style Merchant KHQR, a `check_transaction_by_md5_list` batch endpoint, and a `generate_deeplink_by_qr` endpoint — confirmed to exist, not yet implemented here. See `docs/03-merchant-khqr-and-advanced.md`.
-- **Sandbox realism is unconfirmed.** Whether `sit-api-bakong.nbc.gov.kh` behaves like PayWay's consequence-free sandbox, or is a staging surface that still requires a real bank-linked Bakong account to actually complete a payment into, hasn't been confirmed — flagged in the Testing Checklist in `docs/01-getting-started.md` rather than assumed either way.
+- **No callback/webhook mechanism confirmed for KHQR.** Unlike PayWay's documented `return_url` callback, no equivalent server-to-server notification was confirmed for Bakong KHQR in the sources reviewed while writing this repo. `check_transaction_by_md5` polling is the only status-check mechanism implemented. If a callback mechanism is confirmed later, document it in the tutorial on the site.
+- **Merchant KHQR, batch status checks, and deeplinks aren't implemented.** The official docs reference `TAG.MERCHANT`-style Merchant KHQR, a `check_transaction_by_md5_list` batch endpoint, and a `generate_deeplink_by_qr` endpoint — confirmed to exist, not yet implemented here. See the tutorial on the site.
+- **Sandbox realism is unconfirmed.** Whether `sit-api-bakong.nbc.gov.kh` behaves like PayWay's consequence-free sandbox, or is a staging surface that still requires a real bank-linked Bakong account to actually complete a payment into, hasn't been confirmed — flagged in the Testing Checklist of the tutorial on the site rather than assumed either way.
 
 When editing this repo, preserve this teaching intent: don't quietly "complete" the token-fetch logic, add a callback route, or swap in `bakong-khqr` without flagging that it needs verification against Bakong's current official docs.
