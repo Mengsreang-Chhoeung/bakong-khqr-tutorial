@@ -31,7 +31,7 @@ bakong-khqr-tutorial/
 
 ## Disclaimer
 
-This repo uses `ts-khqr`, a community reimplementation of the KHQR standard, rather than the officially-named `bakong-khqr` npm package — see [`CLAUDE.md`](./CLAUDE.md#known-intentional-gaps) for why. Field names, endpoint URLs, and package behavior referenced here should be verified against the National Bank of Cambodia's official documentation before being taught or used in production:
+This repo uses the `bakong-khqr` npm package (the KHQR SDK published by NBC's KHQR team). Field names, endpoint URLs, and package behavior referenced here should be verified against the National Bank of Cambodia's official documentation before being taught or used in production:
 
 - [Bakong Open API Document (PDF)](https://bakong.nbc.gov.kh/download/KHQR/integration/Bakong%20Open%20API%20Document.pdf)
 - [KHQR SDK Document (PDF)](https://bakong.nbc.gov.kh/download/KHQR/integration/KHQR%20SDK%20Document.pdf)

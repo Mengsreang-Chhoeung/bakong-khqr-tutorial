@@ -1,6 +1,6 @@
 const express = require('express');
 const QRCode = require('qrcode');
-const { KHQR, CURRENCY, TAG } = require('ts-khqr');
+const { BakongKHQR, IndividualInfo, khqrData } = require('bakong-khqr');
 const router = express.Router();
 
 const {
@@ -27,15 +27,13 @@ const EXPIRATION_MS = 5 * 60 * 1000; // 5 minutes
  * doesn't require asking any server to create a transaction, because the
  * QR payload itself just names who gets paid, how much, and until when.
  *
- * PACKAGE CHOICE (teaching note, see CLAUDE.md "Known intentional gaps"
- * for the full reasoning): this uses `ts-khqr`, a community reimplementation
- * with an unambiguous functional API, rather than the officially-named
- * `bakong-khqr` package — whose constructor signature disagrees across
- * public usage examples, and whose real source lives on NBC's private
- * GitLab rather than a publicly inspectable repo. Confirm ts-khqr's output
- * against the official KHQR SDK Document
- * (https://bakong.nbc.gov.kh/download/KHQR/integration/KHQR%20SDK%20Document.pdf)
- * before relying on it for anything beyond this teaching example.
+ * PACKAGE: this uses `bakong-khqr`, the SDK published by NBC's KHQR team
+ * (see the KHQR SDK Document:
+ * https://bakong.nbc.gov.kh/download/KHQR/integration/KHQR%20SDK%20Document.pdf).
+ * `BakongKHQR` takes NO constructor arguments — some public examples show
+ * `new BakongKHQR(accessToken)`, but the published package source (v1.0.20)
+ * defines no constructor, so any argument is silently ignored. Generation
+ * is offline and never needs the access token.
  *
  * Confirmed against the KHQR SDK Document: `expirationTimestamp` is
  * required whenever `amount` is set (a "dynamic" KHQR, one specific
@@ -50,15 +48,19 @@ const EXPIRATION_MS = 5 * 60 * 1000; // 5 minutes
 router.post('/create-payment', async (req, res) => {
   const expiresAt = Date.now() + EXPIRATION_MS;
 
-  const result = KHQR.generate({
-    tag: TAG.INDIVIDUAL,
-    accountID: BAKONG_ACCOUNT_ID,
-    merchantName: BAKONG_MERCHANT_NAME,
-    merchantCity: BAKONG_MERCHANT_CITY || 'Phnom Penh',
-    currency: BAKONG_CURRENCY === 'USD' ? CURRENCY.USD : CURRENCY.KHR,
-    amount: DEMO_AMOUNT,
-    expirationTimestamp: expiresAt,
-  });
+  const individualInfo = new IndividualInfo(
+    BAKONG_ACCOUNT_ID,
+    BAKONG_MERCHANT_NAME,
+    BAKONG_MERCHANT_CITY || 'Phnom Penh',
+    {
+      currency: BAKONG_CURRENCY === 'USD' ? khqrData.currency.usd : khqrData.currency.khr,
+      amount: DEMO_AMOUNT,
+      expirationTimestamp: expiresAt,
+    }
+  );
+
+  // status.code is 0 on success, 1 on a validation error.
+  const result = new BakongKHQR().generateIndividual(individualInfo);
 
   if (result.status.code !== 0) {
     return res.status(400).json({ error: result.status.message });
