@@ -90,7 +90,7 @@ router.post('/create-payment', async (req, res) => {
  * yet — the frontend polls this on an interval until it gets a paid result
  * or the QR's expirationTimestamp passes.
  *
- * UNCONFIRMED (teaching note, see CLAUDE.md): exactly how
+ * UNCONFIRMED (teaching note): exactly how
  * BAKONG_ACCESS_TOKEN is meant to be issued/renewed isn't documented in
  * public sources reviewed while writing this example — it's read here as
  * a static value from .env, obtained manually via the developer portal
